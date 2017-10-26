@@ -81,7 +81,7 @@ except FileNotFoundError:
 
 if rewrite_file_flag:
     last_btc_file = open("last_btc_value.txt", "w")
-    last_btc_file.write("8.59453938")
+    last_btc_file.write(polo_output["btcValue"])
     
 last_btc_file.close()
 

@@ -67,7 +67,7 @@ try:
             polo_output['earned USD'] = round( btc_diff * int(float(polo_output['last'])),3 )
             rewrite_file_flag = True
         else:
-            rewrite_file_flag = False        
+            rewrite_file_flag = False
     except ValueError:
         rewrite_file_flag = True
 
@@ -77,7 +77,7 @@ except FileNotFoundError:
 if rewrite_file_flag:
     last_btc_file = open("last_btc_value.txt", "w")
     last_btc_file.write(polo_output["btcValue"])
-    
+
 last_btc_file.close()
 
 # format resulted json and convert to str before sending
