@@ -80,26 +80,25 @@ if rewrite_file_flag:
 
 last_btc_file.close()
 
-# format resulted json and convert to str before sending
-polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
+if float(polo_output['available']) > 0.01:
+    # format resulted json and convert to str before sending
+    polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
 
-# send an email with all details
-server = smtplib.SMTP('smtp.gmail.com', 587)
-#server.ehlo()
-server.starttls()
+    # send an email with all details
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    #server.ehlo()
+    server.starttls()
 
-# Email details in config file
+    # Email details in config file
+    server.login(from_email, from_email_pass)
 
-server.login(from_email, from_email_pass)
+    msg = "\r\n".join([
+            "From: " + from_email,
+            "To: " + to_email,
+            "Subject: BTC at Polo today",
+            "",
+            polo_output_str
+        ])
 
-msg = "\r\n".join([
-  "From: " + from_email,
-  "To: " + to_email,
-  "Subject: BTC at Polo today",
-  "",
-  polo_output_str
-  ])
-
-server.sendmail(from_email, to_email, msg)
-
-server.quit()
+    server.sendmail(from_email, to_email, msg)
+    server.quit()

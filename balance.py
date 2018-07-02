@@ -85,4 +85,5 @@ if rewrite_file_flag:
     
 last_btc_file.close()
 
-print(polo_output)
+if float(polo_output['available']) > 0.01:
+    print(polo_output)
