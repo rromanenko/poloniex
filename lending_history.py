@@ -17,11 +17,20 @@ import urllib
 
 from polo_config import *
 
+import datetime
+s = "29/03/2018"
+start_time = time.mktime(datetime.datetime.strptime(s, "%d/%m/%Y").timetuple())
+e = "20/07/2018"
+end_time = time.mktime(datetime.datetime.strptime(e, "%d/%m/%Y").timetuple())
+#end_time = int(time.time()) # время окончания - текущее
+
 req = {'command': 'returnLendingHistory',
        'nonce': str(int(time.time())),
-       'account': 'all',
+#       'account': 'all',
+       'start': start_time,
+       'end': end_time,
        'limit': 10000
-       }
+       } 
 
 post_data = urllib.parse.urlencode(req).encode('utf-8')
 hmac_key = secret.encode('utf-8')
@@ -38,7 +47,9 @@ res = requests.post('https://poloniex.com/tradingApi', data=post_data, headers=h
 
 #calculate all my earnings from lending
 sum = 0
+n = 0
 for i in res:
     sum += float(i['earned'])
+    n += 1
 
-print(sum)
+print(round(sum,8), n)

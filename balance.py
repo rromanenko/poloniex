@@ -49,6 +49,7 @@ headers = { 'Content-type': 'application/x-www-form-urlencoded',
 res = requests.post('https://poloniex.com/tradingApi', data=post_data, headers=headers).json()
 
 #add BTC balance details to the global output dictionary
+
 for i in res['BTC']:
     polo_output[i] = res['BTC'][i]
 
