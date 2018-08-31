@@ -36,4 +36,11 @@ if av_balance >= 0.01:
             )
 
     print(pos_info)
+    print(
+            i+1,
+            "amount: ", amount,
+            "av_balance: ", av_balance,
+            "rate: ", float(loan_offers['offers'][i]['rate'])
+            )
+    print(loan_offers['offers'][:i+1])
     
