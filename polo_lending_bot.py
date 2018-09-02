@@ -35,12 +35,21 @@ if av_balance >= 0.01:
             lendingRate=float(loan_offers['offers'][i]['rate'])
             )
 
-    print(pos_info)
-    print(
-            i+1,
-            "amount: ", amount,
-            "av_balance: ", av_balance,
-            "rate: ", float(loan_offers['offers'][i]['rate'])
-            )
-    print(loan_offers['offers'][:i+1])
-    
+    # send an email with all details
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    #server.ehlo()
+    server.starttls()
+
+    # Email details in config file
+    server.login(from_email, from_email_pass)
+
+    msg = "\r\n".join([
+            "From: " + from_email,
+            "To: " + to_email,
+            "Subject: BTC loans at Polo today",
+            "",
+            str(pos_info)
+        ])
+
+    server.sendmail(from_email, to_email, msg)
+    server.quit()
