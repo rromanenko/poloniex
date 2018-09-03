@@ -10,11 +10,15 @@ from poloniex_api import Poloniex
 from polo_config import *
 
 my_polo = Poloniex(
-  API_KEY = key,
-  API_SECRET = secret)
+  API_KEY = key_lend,
+  API_SECRET = secret_lend)
 
 balance = my_polo.returnAvailableAccountBalances("lending")
-av_balance = float(balance['lending']['BTC'])
+
+if balance:
+    av_balance = float(balance['lending']['BTC'])
+else:
+    av_balance = 0
 
 if av_balance >= 0.01:
 
@@ -34,6 +38,9 @@ if av_balance >= 0.01:
             autoRenew=0,
             lendingRate=float(loan_offers['offers'][i]['rate'])
             )
+
+    pos_info['amount'] = av_balance
+    pos_info['rate'] = ("%f" % float(loan_offers['offers'][i]['rate']) )
 
     # send an email with all details
     server = smtplib.SMTP('smtp.gmail.com', 587)

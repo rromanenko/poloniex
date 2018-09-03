@@ -17,6 +17,31 @@ from polo_config import *
 #import for SMTP
 import smtplib
 
+def email_send(s):
+    
+    # send an email with all details
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    #server.ehlo()
+    server.starttls()
+
+    # Email details in config file
+    server.login(from_email, from_email_pass)
+
+    msg = "\r\n".join([
+            "From: " + from_email,
+            "To: " + to_email,
+            "Subject: BTC at Polo today",
+            "",
+            s
+        ])
+
+    server.sendmail(from_email, to_email, msg)
+    server.quit()
+
+# take correct api key/secret pair for this script
+key = key_e2b
+secret = secret_e2b
+
 # getting daily stats
 ticker = requests.get("https://poloniex.com/public?command=returnTicker").json()
 polo_output = {}
@@ -43,62 +68,47 @@ headers = { 'Content-type': 'application/x-www-form-urlencoded',
 
 res = requests.post('https://poloniex.com/tradingApi', data=post_data, headers=headers).json()
 
-#add BTC balance details to the global output dictionary
-for i in res['BTC']:
-    polo_output[i] = res['BTC'][i]
+# check if we received a response with BTC data. If not, that's an error and we email it
+if 'BTC' not in res:
+    email_send(str(res))
+else:
+    #add BTC balance details to the global output dictionary
+    for i in res['BTC']:
+        polo_output[i] = res['BTC'][i]
 
-# last_btc_value.txt file btcValue that we had during our previous check.
-# if check it against the current btcValue and add the difference (if any)
-# to global output dictionary
-# Otherwise (if file not found, if file doesn't contain last btcValue, and if
-# there is a difference between last and current btcValue), we write current btcValue
-# into the file
-rewrite_file_flag = False
-
-try:
-    last_btc_file = open("last_btc_value.txt", "r")
-    last_btc_value_str = last_btc_file.readline().strip()
+    # last_btc_value.txt file btcValue that we had during our previous check.
+    # if check it against the current btcValue and add the difference (if any)
+    # to global output dictionary
+    # Otherwise (if file not found, if file doesn't contain last btcValue, and if
+    # there is a difference between last and current btcValue), we write current btcValue
+    # into the file
+    rewrite_file_flag = False
 
     try:
-        last_btc_value = float(last_btc_value_str)
-        btc_diff = round( float(polo_output["btcValue"]) - last_btc_value,8 )
-        if btc_diff > 0:
-            polo_output['earned BTC'] = '{0:.8f}'.format(btc_diff)
-            polo_output['earned USD'] = round( btc_diff * int(float(polo_output['last'])),3 )
+        last_btc_file = open("last_btc_value.txt", "r")
+        last_btc_value_str = last_btc_file.readline().strip()
+
+        try:
+            last_btc_value = float(last_btc_value_str)
+            btc_diff = round( float(polo_output["btcValue"]) - last_btc_value,8 )
+            if btc_diff > 0:
+                polo_output['earned BTC'] = '{0:.8f}'.format(btc_diff)
+                polo_output['earned USD'] = round( btc_diff * int(float(polo_output['last'])),3 )
+                rewrite_file_flag = True
+            else:
+                rewrite_file_flag = False
+        except ValueError:
             rewrite_file_flag = True
-        else:
-            rewrite_file_flag = False
-    except ValueError:
+    except FileNotFoundError:
         rewrite_file_flag = True
 
-except FileNotFoundError:
-    rewrite_file_flag = True
+    if rewrite_file_flag:
+        last_btc_file = open("last_btc_value.txt", "w")
+        last_btc_file.write(polo_output["btcValue"])
 
-if rewrite_file_flag:
-    last_btc_file = open("last_btc_value.txt", "w")
-    last_btc_file.write(polo_output["btcValue"])
+    last_btc_file.close()
 
-last_btc_file.close()
-
-if float(polo_output['available']) > 0.01:
-    # format resulted json and convert to str before sending
-    polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
-
-    # send an email with all details
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    #server.ehlo()
-    server.starttls()
-
-    # Email details in config file
-    server.login(from_email, from_email_pass)
-
-    msg = "\r\n".join([
-            "From: " + from_email,
-            "To: " + to_email,
-            "Subject: BTC at Polo today",
-            "",
-            polo_output_str
-        ])
-
-    server.sendmail(from_email, to_email, msg)
-    server.quit()
+    if float(polo_output['available']) > 0.01:
+        # format resulted json and convert to str before sending
+        polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
+        email_send(polo_output_str)
