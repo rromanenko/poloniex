@@ -9,6 +9,9 @@ Created on Sat Jul  7 23:18:58 2018
 from poloniex_api import Poloniex
 from polo_config import *
 
+#import for SMTP
+import smtplib
+
 my_polo = Poloniex(
   API_KEY = key_lend,
   API_SECRET = secret_lend)

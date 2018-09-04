@@ -108,7 +108,6 @@ else:
 
     last_btc_file.close()
 
-    if float(polo_output['available']) > 0.01:
-        # format resulted json and convert to str before sending
-        polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
-        email_send(polo_output_str)
+    # format resulted json and convert to str before sending
+    polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
+    email_send(polo_output_str)
