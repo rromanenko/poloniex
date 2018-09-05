@@ -41,25 +41,27 @@ if av_balance >= 0.01:
             autoRenew=0,
             lendingRate=float(loan_offers['offers'][i]['rate'])
             )
+    
+    if 'success' not in pos_info:
 
-    pos_info['amount'] = av_balance
-    pos_info['rate'] = ("%f" % float(loan_offers['offers'][i]['rate']) )
+        pos_info['amount'] = av_balance
+        pos_info['rate'] = ("%f" % float(loan_offers['offers'][i]['rate']) )
 
-    # send an email with all details
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    #server.ehlo()
-    server.starttls()
+        # send an email with all details
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        #server.ehlo()
+        server.starttls()
 
-    # Email details in config file
-    server.login(from_email, from_email_pass)
+        # Email details in config file
+        server.login(from_email, from_email_pass)
 
-    msg = "\r\n".join([
-            "From: " + from_email,
-            "To: " + to_email,
-            "Subject: BTC loans at Polo today",
-            "",
-            str(pos_info)
-        ])
+        msg = "\r\n".join([
+                "From: " + from_email,
+                "To: " + to_email,
+                "Subject: BTC loans at Polo today",
+                "",
+                str(pos_info)
+                ])
 
-    server.sendmail(from_email, to_email, msg)
-    server.quit()
+        server.sendmail(from_email, to_email, msg)
+        server.quit()
