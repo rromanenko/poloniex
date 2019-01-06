@@ -6,7 +6,6 @@ Created on Thu Sep 28 22:27:50 2017
 @author: romanromanenko
 """
 
-import datetime
 import requests
 import time
 import hmac
@@ -18,7 +17,6 @@ from poloniex_api import Poloniex
 
 #import for SMTP
 import smtplib
-
 
 def email_send(s):
     
@@ -44,11 +42,6 @@ def email_send(s):
 # take api key/secret pair for email2balance
 key = key_e2b
 secret = secret_e2b
-
-# take api key/secret pair for lending
-my_polo = Poloniex(
-  API_KEY = key_lend,
-  API_SECRET = secret_lend)
 
 # getting daily stats
 ticker = requests.get("https://poloniex.com/public?command=returnTicker").json()
@@ -115,30 +108,6 @@ else:
         last_btc_file.write(polo_output["btcValue"])
 
     last_btc_file.close()
-
-    # getting my opened loan offers
-    my_open_offers = my_polo.returnOpenLoanOffers()
-
-    # if server returns something and there are offers in the response ...
-    if my_open_offers and 'BTC' in my_open_offers:
-
-        # ... cycle through all offers and compare offer datetime with now
-        # if offer was placed more than 30 min ago, cancel it
-        for i in range(len(my_open_offers['BTC'])):
-
-            now = datetime.datetime.now()
-            date = my_open_offers['BTC'][i]['date']
-            dt = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-
-            if ((now - dt).total_seconds() / 60 - 180) > 20:
-                try:
-                    cancel = my_polo.cancelLoanOffer(orderNumber=my_open_offers['BTC'][i]['id'])
-                except:
-                    email_send("Error cancelling order ID:" + str(my_open_offers['BTC'][i]['id']))
-    elif not my_open_offers:
-        pass
-    else:
-        email_send("Error response for my open offers")
 
     # format resulted json and convert to str before sending
     polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
