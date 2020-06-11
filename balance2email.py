@@ -77,8 +77,8 @@ else:
     for i in res['BTC']:
         polo_output[i] = res['BTC'][i]
 
-    # last_btc_value.txt file btcValue that we had during our previous check.
-    # if check it against the current btcValue and add the difference (if any)
+    # last_btc_value.txt contains btcValue that we had during our previous check.
+    # we check it against the current btcValue and add the difference (if any)
     # to global output dictionary
     # Otherwise (if file not found, if file doesn't contain last btcValue, and if
     # there is a difference between last and current btcValue), we write current btcValue
@@ -92,7 +92,7 @@ else:
         try:
             last_btc_value = float(last_btc_value_str)
             btc_diff = round( float(polo_output["btcValue"]) - last_btc_value,8 )
-            if btc_diff > 0:
+            if btc_diff != 0:
                 polo_output['earned BTC'] = '{0:.8f}'.format(btc_diff)
                 polo_output['earned USD'] = round( btc_diff * int(float(polo_output['last'])),3 )
                 rewrite_file_flag = True
