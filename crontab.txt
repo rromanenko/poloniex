@@ -1,0 +1,5 @@
+05 00 * * * python3 /var/www/python/bitstamp/balance2email.py
+00 13 * * * python3 /var/www/python/poloniex/balance2email.py
+*/5 * * * * python3 /var/www/python/poloniex/lending_bot.py
+*/15 * * * * python3 /var/www/python/bitstamp/transactions2email.py
+00 23 * * 1,2,3,4,5 python3 /var/www/python/cbr/cbr2email.py
