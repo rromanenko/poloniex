@@ -111,4 +111,5 @@ else:
 
     # format resulted json and convert to str before sending
     polo_output_str = str(json.dumps(polo_output, sort_keys=True, indent=4))
-    email_send(polo_output_str)
+    print(polo_output_str)
+    # email_send(polo_output_str)
