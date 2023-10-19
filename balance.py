@@ -22,6 +22,10 @@ import json
 import urllib
 from polo_config import *
 
+# take api key/secret pair for email2balance
+key = key_e2b
+secret = secret_e2b
+
 # getting daily stats
 ticker = requests.get("https://poloniex.com/public?command=returnTicker").json()
 polo_output = {}
@@ -49,6 +53,8 @@ headers = { 'Content-type': 'application/x-www-form-urlencoded',
 res = requests.post('https://poloniex.com/tradingApi', data=post_data, headers=headers).json()
 
 #add BTC balance details to the global output dictionary
+
+print(res)
 
 for i in res['BTC']:
     polo_output[i] = res['BTC'][i]
